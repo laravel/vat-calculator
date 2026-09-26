@@ -496,12 +496,12 @@ class VatCalculator
         'GB' => [
             // Akrotiri
             [
-                'postalCode' => '/^BFPO57|BF12AT$/',
+                'postalCode' => '/^(?:BFPO57|BF12AT)$/',
                 'code' => 'CY',
             ],
             // Dhekelia
             [
-                'postalCode' => '/^BFPO58|BF12AU$/',
+                'postalCode' => '/^(?:BFPO58|BF12AU)$/',
                 'code' => 'CY',
             ],
         ],
