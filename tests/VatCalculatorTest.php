@@ -670,6 +670,32 @@ class VatCalculatorTest extends TestCase
         $this->assertEquals(3.84, $vatCalculator->getTaxValue());
     }
 
+    public function test_gb_base_postal_code_must_be_the_whole_code()
+    {
+        $net = 24.00;
+        $vatCalculator = new VatCalculator;
+
+        // A longer code that only ends with the base postcode is not that base.
+        $result = $vatCalculator->calculate($net, 'GB', 'XXBF12AT', false);
+        $this->assertEquals(24.00, $result);
+        $this->assertEquals(0.00, $vatCalculator->getTaxRate());
+        $this->assertEquals(0.00, $vatCalculator->getTaxValue());
+
+        // A longer code that only starts with the BFPO number is not that number.
+        $result = $vatCalculator->calculate($net, 'GB', 'BFPO58EXTRA', false);
+        $this->assertEquals(24.00, $result);
+        $this->assertEquals(0.00, $vatCalculator->getTaxRate());
+
+        // The exact base codes still use the Cyprus rate.
+        $result = $vatCalculator->calculate($net, 'GB', 'BFPO58', false);
+        $this->assertEquals(28.56, $result);
+        $this->assertEquals(0.19, $vatCalculator->getTaxRate());
+
+        $result = $vatCalculator->calculate($net, 'GB', 'BF12AU', false);
+        $this->assertEquals(28.56, $result);
+        $this->assertEquals(0.19, $vatCalculator->getTaxRate());
+    }
+
     public function test_postal_codes_without_exceptions_get_standard_rate()
     {
         $net = 24.00;
