@@ -32,7 +32,7 @@ return [
              'rate' => 0.25,
          ],
     ],
-],
+];
 ```
 
 ### Refactored Validation Rule
@@ -59,8 +59,7 @@ $validator = Validator::make(
 
 ### Removed Functionality
 
-All functionality for the front-end capabilities, as well as the IP lookup functionality have been removed. Additionally, all shipped translations of the VatNumber validation rule have been removed. No migration path is offered for these so if you rely on these you can either remain on v2 of the package or you can recreate the functionality in your app. 
-
+All functionality for the front-end capabilities, as well as the IP lookup functionality have been removed. Additionally, all shipped translations of the VatNumber validation rule have been removed. No migration path is offered for these so if you rely on these, you can either remain on v2 of the package or you can recreate the functionality in your app. 
 
 ## Upgrading from v1 to v2
 

@@ -27,7 +27,7 @@ VatCalculator::isValidVATNumber('NL123456789B01');
 ```
 
 > [!WARNING]  
-> This package does not provide any promises for correctly calculated taxes. You are still responsible to making sure that any calculated tax is correct for your use case. If you're uncertain if a certain tax is correct or not, it's best that you talk to an accountant.
+> This package does not provide any promises for correctly calculated taxes. You are still responsible for making sure that any calculated tax is correct for your use case. If you're uncertain whether a certain tax is correct or not, it's best that you talk to an accountant.
 
 ## Requirements
 
@@ -106,7 +106,7 @@ if (VatCalculator::shouldCollectVAT('DE')) {
 }
 ```
 
-To validate your customers VAT numbers, you can use the `isValidVATNumber` method. The VAT number should be in a format specified by the [VIES](http://ec.europa.eu/taxation_customs/vies/faqvies.do#item_11). The given VAT numbers will be truncated and non relevant characters / whitespace will automatically be removed.
+To validate your customers VAT numbers, you can use the `isValidVATNumber` method. The VAT number should be in a format specified by the [VIES](http://ec.europa.eu/taxation_customs/vies/faqvies.do#item_11). The given VAT numbers will be truncated and non-relevant characters / whitespace will automatically be removed.
 
 This service relies on a third party SOAP API provided by the EU. If, for whatever reason, this API is unavailable a `VATCheckUnavailableException` will be thrown.
 
@@ -118,7 +118,7 @@ try {
 }
 ```
 
-Alternatively, it is also possible to validate only the format of the VAT Number specified by [VIES](http://ec.europa.eu/taxation_customs/vies/faqvies.do#item_11). This is useful, if you do not want to wait for a response from the SOAP API.
+Alternatively, it is also possible to validate only the format of the VAT Number specified by [VIES](http://ec.europa.eu/taxation_customs/vies/faqvies.do#item_11). This is useful if you do not want to wait for a response from the SOAP API.
 
 ```php
 // This check will return false because no connection to VIES could be made...
@@ -130,7 +130,7 @@ $validVAT = VatCalculator::isValidVatNumberFormat('NL 123456789 B01');
 
 ### Get EU VAT number details
 
-To get the details of a VAT number, you can use the `getVATDetails` method. The VAT number should be in a format specified by the [VIES](http://ec.europa.eu/taxation_customs/vies/faqvies.do#item_11). The given VAT numbers will be truncated and non relevant characters / whitespace will automatically be removed.
+To get the details of a VAT number, you can use the `getVATDetails` method. The VAT number should be in the format specified by the [VIES](http://ec.europa.eu/taxation_customs/vies/faqvies.do#item_11). The given VAT numbers will be truncated and non relevant characters / whitespace will automatically be removed.
 
 This service relies on a third party SOAP API provided by the EU. If, for whatever reason, this API is unavailable a `VATCheckUnavailableException` will be thrown.
 
@@ -201,12 +201,12 @@ HMRC_CLIENT_SECRET="your-client-secret"
 
 By default, the VatCalculator has all EU VAT rules predefined, so that it can easily be updated, if it changes for a specific country.
 
-If you need to define other VAT rates, you can do so by publishing the configuration and add more rules.
+If you need to define other VAT rates, you can do so by publishing the configuration and adding more rules.
 
 > **Warning**  
 > Be sure to set your business country code in the configuration file, to get correct VAT calculation when selling to business customers in your own country.
 
-To publish the configuration files, run the `vendor:publish` command
+To publish the configuration files, run the `vendor:publish` command.
 
 ```bash
 php artisan vendor:publish --provider="Mpociot\VatCalculator\VatCalculatorServiceProvider"
@@ -216,7 +216,7 @@ This will create a `vat_calculator.php` in your config directory.
 
 #### Handling SOAP Faults
 
-If for some reason, SOAP faults happen when the VIES API is faulty, these errors will be handled gracefully and `false` will be returned. However, if you explicitly want to be aware of any SOAP faults you may instruct VatCalculator to throw them as a `VATCheckUnavailableException`. The `VATCheckUnavailableException` will then contain the specific message of the SOAP fault.
+If the VIES API returns SOAP faults, these errors will be handled gracefully and `false` will be returned. However, if you explicitly want to be aware of any SOAP faults you may instruct VatCalculator to throw them as a `VATCheckUnavailableException`. The `VATCheckUnavailableException` will then contain the specific message of the SOAP fault.
 
 Set the option to `true` in your config file:
 
@@ -240,7 +240,7 @@ return [
 
 ### ValidVatNumber Validation Rule
 
-VatCalculator also ships with a `ValidVatNumber` validation rule for VAT Numbers. You can use this when validation input from a form request or a standalone validator instance:
+VatCalculator also ships with a `ValidVatNumber` validation rule for VAT Numbers. You can use this when validating input from a form request or a standalone validator instance:
 
 ```php
 use Mpociot\VatCalculator\Rules\ValidVatNumber;
@@ -289,7 +289,7 @@ Set everything in one command:
 
 Or use the more readable, chainable approach:
 
-- `useTaxFrom($countryCode)` &mdash; Use the given countries tax rate
+- `useTaxFrom($countryCode)` &mdash; Use the given country's tax rate
 - `asIndividual()` &mdash; The billable model is not a company (default) 
 - `asBusiness()` &mdash; The billable model is a valid company
 
