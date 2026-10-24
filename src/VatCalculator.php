@@ -673,27 +673,32 @@ class VatCalculator
      * @param  null|string  $type  The type can be low or high
      * @return float
      */
-    public function calculate($netPrice, $countryCode = null, $postalCode = null, $company = null, $type = null)
-    {
-        if ($countryCode) {
-            $this->setCountryCode($countryCode);
-        }
+	//   Calculate the gross price while honoring explicitly supplied customer and location values.
+	//   Used by VatCalculatorStateResetTest\testExplicitFalseClearsCompanyState, VatCalculatorStateResetTest\testExplicitEmptyClearsLocationState, VatCalculatorStateResetTest\testNullArgumentsKeepPreviousState.
+	public function calculate($netPrice, $countryCode=null, $postalCode=null, $company=null, $type=null) {
+		// Preserve the current country only when its optional argument is null.
+		if ($countryCode!==null) {
+			$this->setCountryCode($countryCode);
+		}
 
-        if ($postalCode) {
-            $this->setPostalCode($postalCode);
-        }
+		// Accept an explicit empty or zero-valued postal code.
+		if ($postalCode!==null) {
+			$this->setPostalCode($postalCode);
+		}
 
-        if ($company && $company !== $this->isCompany()) {
-            $this->setCompany($company);
-        }
+		// Allow an individual-customer flag to replace an earlier business flag.
+		if ($company!==null && $company!==$this->isCompany()) {
+			$this->setCompany($company);
+		}
 
-        $this->netPrice = floatval($netPrice);
-        $this->taxRate = $this->getTaxRateForLocation($this->getCountryCode(), $this->getPostalCode(), $this->isCompany(), $type);
-        $this->taxValue = round($this->taxRate * $this->netPrice, 2);
-        $this->value = round($this->netPrice + $this->taxValue, 2);
+		// Calculate the result using the effective customer and location state.
+		$this->netPrice=floatval($netPrice);
+		$this->taxRate=$this->getTaxRateForLocation($this->getCountryCode(), $this->getPostalCode(), $this->isCompany(), $type);
+		$this->taxValue=round($this->taxRate*$this->netPrice, 2);
+		$this->value=round($this->netPrice+$this->taxValue, 2);
 
-        return $this->value;
-    }
+		return $this->value;
+	}
 
     /**
      * Calculate the net price on the gross price, country code and indication if the
@@ -706,27 +711,32 @@ class VatCalculator
      * @param  null|string  $type  The type can be low or high
      * @return float
      */
-    public function calculateNet($gross, $countryCode = null, $postalCode = null, $company = null, $type = null)
-    {
-        if ($countryCode) {
-            $this->setCountryCode($countryCode);
-        }
+	//   Calculate the net price while honoring explicitly supplied customer and location values.
+	//   Used by VatCalculatorStateResetTest\testExplicitFalseClearsCompanyState, VatCalculatorStateResetTest\testExplicitEmptyClearsLocationState, VatCalculatorStateResetTest\testNullArgumentsKeepPreviousState.
+	public function calculateNet($gross, $countryCode=null, $postalCode=null, $company=null, $type=null) {
+		// Preserve the current country only when its optional argument is null.
+		if ($countryCode!==null) {
+			$this->setCountryCode($countryCode);
+		}
 
-        if ($postalCode) {
-            $this->setPostalCode($postalCode);
-        }
+		// Accept an explicit empty or zero-valued postal code.
+		if ($postalCode!==null) {
+			$this->setPostalCode($postalCode);
+		}
 
-        if ($company && $company !== $this->isCompany()) {
-            $this->setCompany($company);
-        }
+		// Allow an individual-customer flag to replace an earlier business flag.
+		if ($company!==null && $company!==$this->isCompany()) {
+			$this->setCompany($company);
+		}
 
-        $this->value = floatval($gross);
-        $this->taxRate = $this->getTaxRateForLocation($this->getCountryCode(), $this->getPostalCode(), $this->isCompany(), $type);
-        $this->taxValue = round($this->taxRate > 0 ? $this->value / (1 + $this->taxRate) * $this->taxRate : 0, 2);
-        $this->netPrice = round($this->value - $this->taxValue, 2);
+		// Calculate the result using the effective customer and location state.
+		$this->value=floatval($gross);
+		$this->taxRate=$this->getTaxRateForLocation($this->getCountryCode(), $this->getPostalCode(), $this->isCompany(), $type);
+		$this->taxValue=round(($this->taxRate>0 ? $this->value/(1+$this->taxRate)*$this->taxRate : 0), 2);
+		$this->netPrice=round($this->value-$this->taxValue, 2);
 
-        return $this->netPrice;
-    }
+		return $this->netPrice;
+	}
 
     /**
      * @return float
@@ -1084,8 +1094,11 @@ class VatCalculator
      *
      * @internal This method is not covered by our BC policy.
      */
+	//   Configure the fixture endpoints and HTTP client for validation tests.
+	//   Used by VatCalculatorTest\test_can_validate_valid_ukvat_number, VatCalculatorTest\test_can_validate_invalid_ukvat_number.
     public function testing($curlClient)
     {
+		// Keep test requests on the sandbox endpoints with fixture credentials.
         $this->ukHmrcTokenEndpoint = 'https://test-api.service.hmrc.gov.uk/oauth/token';
         $this->ukValidationEndpoint = 'https://test-api.service.hmrc.gov.uk';
 
