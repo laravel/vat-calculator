@@ -820,10 +820,20 @@ class VatCalculator
      * @param  string  $countryCode
      * @return array
      */
-    public function getTaxRatesForCountry($countryCode)
-    {
-        return $this->taxRules[$countryCode]['rates'];
-    }
+	//   Return named rates from the effective country rule.
+	//   Used by VatCalculatorCountryRatesTest\testConfiguredNamedRatesOverrideBuiltInRates, VatCalculatorCountryRatesTest\testScalarOverridesPreserveBuiltInNamedRates, VatCalculatorCountryRatesTest\testCountriesWithoutNamedRatesReturnAnEmptyArray.
+	public function getTaxRatesForCountry($countryCode) {
+		// Normalize country codes consistently with individual rate lookups.
+		$countryCode=strtoupper($countryCode);
+
+		// Array overrides replace the complete country rule, including its named rates.
+		if (isset($this->config['rules'][$countryCode]) && is_array($this->config['rules'][$countryCode])) {
+			return $this->config['rules'][$countryCode]['rates'] ?? [];
+		}
+
+		// Scalar overrides leave the built-in named rates intact.
+		return $this->taxRules[$countryCode]['rates'] ?? [];
+	}
 
     /**
      * Returns the tax rate for the given country code.
@@ -1084,8 +1094,11 @@ class VatCalculator
      *
      * @internal This method is not covered by our BC policy.
      */
+	//   Configure the fixture endpoints and HTTP client for validation tests.
+	//   Used by VatCalculatorTest\test_can_validate_valid_ukvat_number, VatCalculatorTest\test_can_validate_invalid_ukvat_number.
     public function testing($curlClient)
     {
+		// Keep test requests on the sandbox endpoints with fixture credentials.
         $this->ukHmrcTokenEndpoint = 'https://test-api.service.hmrc.gov.uk/oauth/token';
         $this->ukValidationEndpoint = 'https://test-api.service.hmrc.gov.uk';
 
