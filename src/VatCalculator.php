@@ -898,23 +898,29 @@ class VatCalculator
      * @param  string  $vatNumber
      * @return bool
      */
-    public function isValidVatNumberFormat($vatNumber)
-    {
-        $vatNumber = str_replace([' ', "\xC2\xA0", "\xA0", '-', '.', ','], '', trim($vatNumber));
+	//   Validate a VAT number after normalizing its country prefix.
+	//   Used by VatNumberCountryPrefixTest\testCountryPrefixesAreCaseInsensitive, VatCalculatorTest\test_is_valid_vat_number_format.
+	public function isValidVatNumberFormat($vatNumber) {
+		// Remove the established separators without altering the number body.
+		$vatNumber=str_replace([' ', "\xC2\xA0", "\xA0", '-', '.', ','], '', trim($vatNumber));
 
-        if ($vatNumber === '') {
-            return false;
-        }
+		// Reject an empty number before looking up its country pattern.
+		if ($vatNumber==='') {
+			return false;
+		}
 
-        $countryCode = substr($vatNumber, 0, 2);
-        $vatNumber = substr($vatNumber, 2);
+		// Normalize only the prefix so letter-bearing number bodies keep their validation rules.
+		$countryCode=strtoupper(substr($vatNumber, 0, 2));
+		$vatNumber=substr($vatNumber, 2);
 
-        if (! isset($this->patterns[$countryCode])) {
-            return false;
-        }
+		// Unknown country prefixes do not have a supported format.
+		if (!isset($this->patterns[$countryCode])) {
+			return false;
+		}
 
-        return preg_match('/^'.$this->patterns[$countryCode].'$/', $vatNumber) > 0;
-    }
+		// Apply the existing country-specific number pattern.
+		return preg_match('/^' . $this->patterns[$countryCode] . '$/', $vatNumber)>0;
+	}
 
     /**
      * @param  string  $vatNumber
@@ -972,10 +978,13 @@ class VatCalculator
      *
      * @throws VATCheckUnavailableException
      */
+	//   Retrieve VAT details using a normalized country prefix.
+	//   Used by VatCalculator\isValidVATNumber, VatNumberCountryPrefixTest\testViesReceivesNormalizedCountryPrefixes, VatNumberCountryPrefixTest\testLowercaseBritishPrefixStillUsesHmrc.
     public function getVATDetails($vatNumber)
     {
+		// Normalize the service country code while retaining the supplied VAT number body.
         $vatNumber = str_replace([' ', "\xC2\xA0", "\xA0", '-', '.', ','], '', trim($vatNumber));
-        $countryCode = substr($vatNumber, 0, 2);
+		$countryCode=strtoupper(substr($vatNumber, 0, 2));
         $vatNumber = substr($vatNumber, 2);
 
         if (strtoupper($countryCode) === 'GB') {
@@ -1084,8 +1093,11 @@ class VatCalculator
      *
      * @internal This method is not covered by our BC policy.
      */
+	//   Configure the fixture endpoints and HTTP client for validation tests.
+	//   Used by VatCalculatorTest\test_can_validate_valid_ukvat_number, VatCalculatorTest\test_can_validate_invalid_ukvat_number.
     public function testing($curlClient)
     {
+		// Keep test requests on the sandbox endpoints with fixture credentials.
         $this->ukHmrcTokenEndpoint = 'https://test-api.service.hmrc.gov.uk/oauth/token';
         $this->ukValidationEndpoint = 'https://test-api.service.hmrc.gov.uk';
 

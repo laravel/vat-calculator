@@ -319,8 +319,11 @@ class VatCalculatorTest extends TestCase
         $this->assertTrue($result);
     }
 
+	//   Reject invalid numbers after normalizing the service country code.
+	//   Used by TestCase\runTest.
     public function test_can_validate_invalid_vat_number()
     {
+		// Exercise the established validation contract with the supplied fixtures.
         $result = new \stdClass;
         $result->valid = false;
 
@@ -328,7 +331,7 @@ class VatCalculatorTest extends TestCase
         $vatCheck->expects($this->any())
             ->method('checkVat')
             ->with([
-                'countryCode' => 'So',
+				'countryCode' => 'SO',
                 'vatNumber' => 'meInvalidNumber',
             ])
             ->willReturn($result);
@@ -340,13 +343,16 @@ class VatCalculatorTest extends TestCase
         $this->assertFalse($result);
     }
 
+	//   Return false when the normalized VAT request encounters a SOAP fault.
+	//   Used by TestCase\runTest.
     public function test_validate_vat_number_returns_false_on_soap_failure()
     {
+		// Exercise the established validation contract with the supplied fixtures.
         $vatCheck = $this->getMockFromWsdl(__DIR__.'/checkVatService.wsdl', 'VATService');
         $vatCheck->expects($this->any())
             ->method('checkVat')
             ->with([
-                'countryCode' => 'So',
+				'countryCode' => 'SO',
                 'vatNumber' => 'meInvalidNumber',
             ])
             ->willThrowException(new \SoapFault('Server', 'Something went wrong'));
@@ -358,13 +364,16 @@ class VatCalculatorTest extends TestCase
         $this->assertFalse($result);
     }
 
+	//   Keep SOAP failures as false when forwarding is disabled.
+	//   Used by TestCase\runTest.
     public function test_validate_vat_number_returns_false_on_soap_failure_without_forwarding()
     {
+		// Exercise the established validation contract with the supplied fixtures.
         $vatCheck = $this->getMockFromWsdl(__DIR__.'/checkVatService.wsdl', 'VATService');
         $vatCheck->expects($this->any())
             ->method('checkVat')
             ->with([
-                'countryCode' => 'So',
+				'countryCode' => 'SO',
                 'vatNumber' => 'meInvalidNumber',
             ])
             ->willThrowException(new \SoapFault('Server', 'Something went wrong'));
@@ -382,15 +391,18 @@ class VatCalculatorTest extends TestCase
         $this->assertFalse($result);
     }
 
+	//   Forward SOAP failures from a normalized VAT request when configured.
+	//   Used by TestCase\runTest.
     public function test_validate_vat_number_throws_exception_on_soap_failure()
     {
+		// Exercise the established validation contract with the supplied fixtures.
         $this->expectException(VATCheckUnavailableException::class);
 
         $vatCheck = $this->getMockFromWsdl(__DIR__.'/checkVatService.wsdl', 'VATService');
         $vatCheck->expects($this->any())
             ->method('checkVat')
             ->with([
-                'countryCode' => 'So',
+				'countryCode' => 'SO',
                 'vatNumber' => 'meInvalidNumber',
             ])
             ->willThrowException(new \SoapFault('Server', 'Something went wrong'));
@@ -1103,8 +1115,11 @@ class VatCalculatorTest extends TestCase
     }
 
     #[Covers('VatCalculator::isValidVatNumberFormat')]
+	//   Validate supported and malformed VAT number formats.
+	//   Used by TestCase\runTest.
     public function test_is_valid_vat_number_format()
     {
+		// Exercise the established validation contract with the supplied fixtures.
         $valid = [
             'ATU12345678',
             'BE0123456789',
@@ -1182,7 +1197,7 @@ class VatCalculatorTest extends TestCase
             'SI1234567',
             'SK123456789',
 
-            // valid number but with prefix
+			// Valid number but with prefix.
             'invalid_prefix_GB999999973',
             'invalid_prefix_IE1234567X',
             'invalid_prefix_ESB1234567C',
@@ -1190,7 +1205,7 @@ class VatCalculatorTest extends TestCase
             'invalid_prefix_MT12345678',
             'invalid_prefix_LT123456789',
 
-            // valid number but with suffix
+			// Valid number but with suffix.
             'IE1234567X_invalid_suffix',
             'ESB1234567C_invalid_suffix',
             'BE0123456789_invalid_suffix',
