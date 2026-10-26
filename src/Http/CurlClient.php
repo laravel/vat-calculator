@@ -24,7 +24,9 @@ class CurlClient
             throw new \RuntimeException('cURL GET error: '.curl_error($ch));
         }
 
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         return $response;
     }
@@ -59,7 +61,9 @@ class CurlClient
             throw new \RuntimeException('cURL POST error: '.curl_error($ch));
         }
 
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         return $response;
     }
@@ -93,7 +97,9 @@ class CurlClient
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         $header = substr($response, 0, $headerSize);
         $body = substr($response, $headerSize);
